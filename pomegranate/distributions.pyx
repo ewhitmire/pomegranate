@@ -604,7 +604,7 @@ cdef class LogNormalDistribution( Distribution ):
 		cdef int i
 		for i in range(n):
 			log_probability[i] = -_log( symbol[i] * self.sigma * SQRT_2_PI ) \
-				- 0.5 * ((_log(symbol[i]) - self.mu) / self.sigma) ** 2			
+				- 0.5 * ((_log(symbol[i]) - self.mu) / self.sigma) ** 2
 
 	def sample( self, n=None ):
 		"""Return a sample from this distribution."""
@@ -970,7 +970,7 @@ cdef class GammaDistribution( Distribution ):
 		cdef int i
 
 		for i in range(n):
-			log_probability[i] = (_log(beta) * alpha - lgamma(alpha) + 
+			log_probability[i] = (_log(beta) * alpha - lgamma(alpha) +
 				_log(symbol[i]) * (alpha - 1) - beta * symbol[i])
 
 	def sample( self, n=None ):
@@ -1375,11 +1375,11 @@ cdef class DiscreteDistribution( Distribution ):
 			for key, value in self.items():
 				if value >= rand:
 					return key
-				rand -= value		
+				rand -= value
 		else:
 			samples = [self.sample() for i in range(n)]
 			return numpy.array(samples)
-			
+
 
 	def fit( self, items, weights=None, inertia=0.0 ):
 		"""
@@ -1913,7 +1913,7 @@ cdef class IndependentComponentsDistribution( MultivariateDistribution ):
 
 			for j in range(d):
 				logp += (<Model> self.distributions_ptr[j])._log_probability(symbol[i*d+j])
-				logp += self.weights_ptr[j]	
+				logp += self.weights_ptr[j]
 
 			log_probability[i] = logp
 
@@ -1998,13 +1998,14 @@ cdef class MultivariateGaussianDistribution( MultivariateDistribution ):
 			self.mu = numpy.array( parameters[0] )
 			self.cov = numpy.array( parameters[1] )
 
-	def __cinit__( self, means=[], covariance=[], frozen=False ):
+	def __cinit__( self, means=[], covariance=[], frozen=False, only_diagonal=False ):
 		"""
 		Take in the mean vector and the covariance matrix.
 		"""
 
 		self.name = "MultivariateGaussianDistribution"
 		self.frozen = frozen
+		self.only_diagonal = only_diagonal
 		self.mu = numpy.array(means, dtype='float64')
 		self._mu = <double*> self.mu.data
 		self.cov = numpy.array(covariance, dtype='float64')
@@ -2023,7 +2024,7 @@ cdef class MultivariateGaussianDistribution( MultivariateDistribution ):
 		self._inv_dot_mu = <double*> calloc(d, sizeof(double))
 
 		chol = scipy.linalg.cholesky(self.cov, lower=True)
-		self.inv_cov = scipy.linalg.solve_triangular(chol, numpy.eye(d), 
+		self.inv_cov = scipy.linalg.solve_triangular(chol, numpy.eye(d),
 			lower=True).T
 		self._inv_cov = <double*> self.inv_cov.data
 		mdot(self._mu, self._inv_cov, self._inv_dot_mu, 1, d, d)
@@ -2187,9 +2188,12 @@ cdef class MultivariateGaussianDistribution( MultivariateDistribution ):
 
 		for j in range(d):
 			for k in range(d):
-				cov = (pair_sum[j*d + k] - column_sum[j]*u[k]- column_sum[k]*u[j] + 
-					self.w_sum*u[j]*u[k]) / self.w_sum
-				self._cov[j*d + k] = self._cov[j*d + k] * inertia + cov * (1-inertia)
+				if self.only_diagonal and j==k:
+					self._cov[j*d + k] = 0
+				else:
+					cov = (pair_sum[j*d + k] - column_sum[j]*u[k]- column_sum[k]*u[j] +
+						self.w_sum*u[j]*u[k]) / self.w_sum
+					self._cov[j*d + k] = self._cov[j*d + k] * inertia + cov * (1-inertia)
 
 		memset( column_sum, 0, d*sizeof(double) )
 		memset( pair_sum, 0, d*d*sizeof(double) )
@@ -2204,7 +2208,7 @@ cdef class MultivariateGaussianDistribution( MultivariateDistribution ):
 			# to get a good measurement, so reinitialize this component.
 			chol = scipy.linalg.cholesky(self.cov + min_covar*numpy.eye(d), lower=True)
 
-		self.inv_cov = scipy.linalg.solve_triangular(chol, numpy.eye(d), 
+		self.inv_cov = scipy.linalg.solve_triangular(chol, numpy.eye(d),
 			lower=True).T
 		self._inv_cov = <double*> self.inv_cov.data
 		mdot(self._mu, self._inv_cov, self._inv_dot_mu, 1, d, d)
@@ -2241,7 +2245,7 @@ cdef class DirichletDistribution( MultivariateDistribution ):
 		self.name = "DirichletDistribution"
 		self.frozen = frozen
 		self.d = len(alphas)
-		
+
 		self.alphas = numpy.array(alphas, dtype='float64')
 		self.alphas_ptr = <double*> self.alphas.data
 		self.beta_norm = lgamma(sum(alphas)) - sum([lgamma(alpha) for alpha in alphas])
@@ -2312,8 +2316,8 @@ cdef class DirichletDistribution( MultivariateDistribution ):
 			return
 
 		self.summaries_ndarray += pseudocount
-		alphas = self.summaries_ndarray * (1-inertia) + self.alphas * inertia 
-		
+		alphas = self.summaries_ndarray * (1-inertia) + self.alphas * inertia
+
 		self.alphas = alphas
 		self.alphas_ptr = <double*> self.alphas.data
 		self.beta_norm = lgamma(sum(alphas)) - sum([lgamma(alpha) for alpha in alphas])
@@ -2361,7 +2365,7 @@ cdef class ConditionalProbabilityTable( MultivariateDistribution ):
 
 		memset(self.counts, 0, self.n*sizeof(double))
 		memset(self.marginal_counts, 0, self.n*sizeof(double)/self.k)
-		
+
 		self.idxs[0] = 1
 		self.idxs[1] = self.k
 		for i in range(self.m-1):
@@ -2380,7 +2384,7 @@ cdef class ConditionalProbabilityTable( MultivariateDistribution ):
 
 		marginal_keys = []
 		for i, row in enumerate( table[::self.k] ):
-			marginal_keys.append( ( tuple(row[:-2]), i ) ) 
+			marginal_keys.append( ( tuple(row[:-2]), i ) )
 
 		self.marginal_keymap = OrderedDict(marginal_keys)
 		self.parents = parents
@@ -2514,12 +2518,12 @@ cdef class ConditionalProbabilityTable( MultivariateDistribution ):
 
 	cdef void __summarize(self, items, double [:] weights):
 		cdef int i, n = len(items)
-		cdef tuple item 
+		cdef tuple item
 
 		for i in range(n):
 			key = self.keymap[tuple(items[i])]
 			self.counts[key] += weights[i]
-			
+
 			key = self.marginal_keymap[tuple(items[i][:-1])]
 			self.marginal_counts[key] += weights[i]
 
@@ -2560,10 +2564,10 @@ cdef class ConditionalProbabilityTable( MultivariateDistribution ):
 				k = i / self.k
 
 				if self.marginal_counts[k] > 0:
-					probability = ((self.counts[i] + pseudocount) / 
+					probability = ((self.counts[i] + pseudocount) /
 						(self.marginal_counts[k] + pseudocount * self.k))
 
-					self.values[i] = _log(cexp(self.values[i])*inertia + 
+					self.values[i] = _log(cexp(self.values[i])*inertia +
 						probability*(1-inertia))
 
 				else:
@@ -2640,7 +2644,7 @@ cdef class JointProbabilityTable( MultivariateDistribution ):
 		self.count = 0
 
 		memset(self.counts, 0, self.n*sizeof(double))
-		
+
 		self.idxs[0] = 1
 		self.idxs[1] = self.k
 		for i in range(self.m-1):
@@ -2712,7 +2716,7 @@ cdef class JointProbabilityTable( MultivariateDistribution ):
 
 		if isinstance(neighbor_values, dict):
 			neighbor_values = [ neighbor_values.get( d, None ) for d in self.parents ]
-		
+
 		if isinstance(neighbor_values, list):
 			wrt = neighbor_values.index(None)
 
@@ -2756,7 +2760,7 @@ cdef class JointProbabilityTable( MultivariateDistribution ):
 
 	cdef void __summarize(self, items, double [:] weights):
 		cdef int i, n = len(items)
-		cdef tuple item 
+		cdef tuple item
 
 		for i in range(n):
 			key = self.keymap[tuple(items[i])]
@@ -2791,7 +2795,7 @@ cdef class JointProbabilityTable( MultivariateDistribution ):
 		with nogil:
 			for i in range(self.n):
 				probability = ((self.counts[i] + p) / (self.count + p * self.k))
-				self.values[i] = _log(cexp(self.values[i])*inertia + 
+				self.values[i] = _log(cexp(self.values[i])*inertia +
 					probability*(1-inertia))
 
 		self.clear_summaries()
