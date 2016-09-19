@@ -2188,7 +2188,7 @@ cdef class MultivariateGaussianDistribution( MultivariateDistribution ):
 
 		for j in range(d):
 			for k in range(d):
-				if self.covariance_type == 'diag' and j==k:
+				if self.covariance_type == 'diag' and j != k:
 					self._cov[j*d + k] = 0
 				else:
 					cov = (pair_sum[j*d + k] - column_sum[j]*u[k]- column_sum[k]*u[j] +
