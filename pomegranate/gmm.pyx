@@ -155,6 +155,7 @@ cdef class GeneralMixtureModel( Model ):
 	cdef dict keymap
 	cdef int n
 	cdef public int hmm
+	cdef str covariance_type
 
 	def __init__( self, distributions, weights=None, n_components=None, covariance_type='full' ):
 		if not callable(distributions) and not isinstance(distributions, list):
