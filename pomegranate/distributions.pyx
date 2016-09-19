@@ -1998,14 +1998,14 @@ cdef class MultivariateGaussianDistribution( MultivariateDistribution ):
 			self.mu = numpy.array( parameters[0] )
 			self.cov = numpy.array( parameters[1] )
 
-	def __cinit__( self, means=[], covariance=[], frozen=False, only_diagonal=False ):
+	def __cinit__( self, means=[], covariance=[], frozen=False, covariance_type='full' ):
 		"""
 		Take in the mean vector and the covariance matrix.
 		"""
 
 		self.name = "MultivariateGaussianDistribution"
 		self.frozen = frozen
-		self.only_diagonal = only_diagonal
+		self.covariance_type = covariance_type
 		self.mu = numpy.array(means, dtype='float64')
 		self._mu = <double*> self.mu.data
 		self.cov = numpy.array(covariance, dtype='float64')
@@ -2188,7 +2188,7 @@ cdef class MultivariateGaussianDistribution( MultivariateDistribution ):
 
 		for j in range(d):
 			for k in range(d):
-				if self.only_diagonal and j==k:
+				if self.covariance_type == 'diag' and j==k:
 					self._cov[j*d + k] = 0
 				else:
 					cov = (pair_sum[j*d + k] - column_sum[j]*u[k]- column_sum[k]*u[j] +
@@ -2221,11 +2221,11 @@ cdef class MultivariateGaussianDistribution( MultivariateDistribution ):
 		self.w_sum = 0.0
 
 	@classmethod
-	def from_samples( cls, items, weights=None ):
+	def from_samples( cls, items, weights=None, covariance_type='full' ):
 		"""Fit a distribution to some data without pre-specifying it."""
 
 		n = len(items[0])
-		d = cls( numpy.ones(n), numpy.eye(n) )
+		d = cls( numpy.ones(n), numpy.eye(n), covariance_type=covariance_type )
 		d.fit(items, weights)
 		return d
 

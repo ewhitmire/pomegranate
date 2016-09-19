@@ -5,8 +5,8 @@ cimport numpy
 
 from .base cimport Model
 
-ctypedef numpy.npy_float64 DOUBLE_t 
-ctypedef numpy.npy_intp SIZE_t  
+ctypedef numpy.npy_float64 DOUBLE_t
+ctypedef numpy.npy_intp SIZE_t
 
 cdef class Distribution( Model ):
 	cdef public list summaries
@@ -87,6 +87,7 @@ cdef class MultivariateGaussianDistribution( MultivariateDistribution ):
 	cdef double* chol_dot_mu
 	cdef double* _inv_cov
 	cdef double* _inv_dot_mu
+	cdef str covariance_type
 
 cdef class DirichletDistribution( MultivariateDistribution ):
 	cdef public numpy.ndarray alphas

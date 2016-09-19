@@ -156,12 +156,13 @@ cdef class GeneralMixtureModel( Model ):
 	cdef int n
 	cdef public int hmm
 
-	def __init__( self, distributions, weights=None, n_components=None ):
+	def __init__( self, distributions, weights=None, n_components=None, covariance_type='full' ):
 		if not callable(distributions) and not isinstance(distributions, list):
 			raise ValueError("must either give initial distributions or constructor")
 
 		self.d = 0
 		self.hmm = 0
+		self.covariance_type = covariance_type
 
 		if callable(distributions):
 			if distributions == DiscreteDistribution:
@@ -254,7 +255,7 @@ cdef class GeneralMixtureModel( Model ):
 			The samples to calculate the log probability of. Each row is a
 			sample and each column is a dimension. If emissions are HMMs then
 			shape is (n, m, d) where m is variable length for each obervation,
-			and X becomes an array of n (m, d)-shaped arrays.  
+			and X becomes an array of n (m, d)-shaped arrays.
 
 		Returns
 		-------
@@ -280,7 +281,7 @@ cdef class GeneralMixtureModel( Model ):
 		cdef double* logp = <double*> logp_ndarray.data
 
 		cdef numpy.ndarray X_ndarray
-		cdef double* X_ptr 
+		cdef double* X_ptr
 
 		if self.hmm == 0:
 			X_ndarray = numpy.array(X)
@@ -422,7 +423,7 @@ cdef class GeneralMixtureModel( Model ):
 						d = len(X_ndarray)
 
 					self._predict_log_proba( X_ptr, y_ptr+i*self.n, 1, d )
-		
+
 		return y if self.hmm == 1 else y.reshape(self.n, n).T
 
 	cdef void _predict_log_proba( self, double* X, double* y, int n, int d ) nogil:
@@ -656,7 +657,7 @@ cdef class GeneralMixtureModel( Model ):
 			kmeans.fit(X_ndarray, max_iterations=1)
 			y = kmeans.predict(X_ndarray)
 
-			distributions = [ self.distribution_callable.from_samples( X_ndarray[y==i] ) for i in range(self.n) ]
+			distributions = [ self.distribution_callable.from_samples( X_ndarray[y==i], self.covariance_type ) for i in range(self.n) ]
 			self.d = distributions[0].d
 
 			self.distributions = numpy.array(distributions)
@@ -674,7 +675,7 @@ cdef class GeneralMixtureModel( Model ):
 		if self.hmm == 0:
 			X_ndarray = _check_input(X, self.keymap)
 			X_ptr = <double*> X_ndarray.data
-			
+
 			with nogil:
 				log_probability = self._summarize(X_ptr, weights_ptr, n)
 		else:
@@ -714,7 +715,7 @@ cdef class GeneralMixtureModel( Model ):
 			for j in range(self.n):
 				r[j*n + i] = cexp(r[j*n + i] - total) * weights[i]
 				summaries[j] += r[j*n + i]
-			
+
 			log_probability_sum += total * weights[i]
 
 			if self.hmm == 1:
