@@ -658,7 +658,7 @@ cdef class GeneralMixtureModel( Model ):
 			kmeans.fit(X_ndarray, max_iterations=1)
 			y = kmeans.predict(X_ndarray)
 
-			distributions = [ self.distribution_callable.from_samples( X_ndarray[y==i], self.covariance_type ) for i in range(self.n) ]
+			distributions = [ self.distribution_callable.from_samples( X_ndarray[y==i], covariance_type=self.covariance_type ) for i in range(self.n) ]
 			self.d = distributions[0].d
 
 			self.distributions = numpy.array(distributions)
