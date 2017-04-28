@@ -47,9 +47,6 @@ setup(
     license='LICENSE.txt',
     description='Pomegranate is a graphical models library for Python, implemented in Cython for speed.',
     ext_modules=extensions,
-    setup_requires=[
-        "numpy >= 1.8.0",
-    ],
     install_requires=[
         "cython >= 0.22.1",
         "numpy >= 1.8.0",
