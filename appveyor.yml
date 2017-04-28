@@ -12,10 +12,12 @@ environment:
     - PYTHON: "C:\\Python27.10"
       PYTHON_VERSION: "2.7.10"
       PYTHON_ARCH: "32"
+      MINICONDA: C:\Miniconda
 
     - PYTHON: "C:\\Python27.10-x64"
       PYTHON_VERSION: "2.7.10"
       PYTHON_ARCH: "64"
+      MINICONDA: C:\Miniconda
 
     # Pre-installed Python versions, which Appveyor may upgrade to
     # a later point release.
@@ -24,26 +26,32 @@ environment:
     - PYTHON: "C:\\Python27"
       PYTHON_VERSION: "2.7.x" # currently 2.7.9
       PYTHON_ARCH: "32"
+      MINICONDA: C:\Miniconda
 
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7.x" # currently 2.7.9
       PYTHON_ARCH: "64"
+      MINICONDA: C:\Miniconda
 
     - PYTHON: "C:\\Python33"
       PYTHON_VERSION: "3.3.x" # currently 3.3.5
       PYTHON_ARCH: "32"
+      MINICONDA: C:\Miniconda3
 
     - PYTHON: "C:\\Python33-x64"
       PYTHON_VERSION: "3.3.x" # currently 3.3.5
       PYTHON_ARCH: "64"
+      MINICONDA: C:\Miniconda3
 
     - PYTHON: "C:\\Python34"
       PYTHON_VERSION: "3.4.x" # currently 3.4.3
       PYTHON_ARCH: "32"
+      MINICONDA: C:\Miniconda3
 
     - PYTHON: "C:\\Python34-x64"
       PYTHON_VERSION: "3.4.x" # currently 3.4.3
       PYTHON_ARCH: "64"
+      MINICONDA: C:\Miniconda3
 
     # Python versions not pre-installed
 
@@ -52,19 +60,23 @@ environment:
 
     - PYTHON: "C:\\Python266"
       PYTHON_VERSION: "2.6.6"
+      MINICONDA: C:\Miniconda
       PYTHON_ARCH: "32"
 
     - PYTHON: "C:\\Python266-x64"
       PYTHON_VERSION: "2.6.6"
       PYTHON_ARCH: "64"
+      MINICONDA: C:\Miniconda
 
     - PYTHON: "C:\\Python35"
       PYTHON_VERSION: "3.5.0"
       PYTHON_ARCH: "32"
+      MINICONDA: C:\Miniconda3
 
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5.0"
       PYTHON_ARCH: "64"
+      MINICONDA: C:\Miniconda3
 
     # Major and minor releases (i.e x.0.0 and x.y.0) prior to 3.3.0 use
     # a different naming scheme.
@@ -72,10 +84,12 @@ environment:
     - PYTHON: "C:\\Python270"
       PYTHON_VERSION: "2.7.0"
       PYTHON_ARCH: "32"
+      MINICONDA: C:\Miniconda
 
     - PYTHON: "C:\\Python270-x64"
       PYTHON_VERSION: "2.7.0"
       PYTHON_ARCH: "64"
+      MINICONDA: C:\Miniconda
 
 install:
   # If there is a newer build queued for the same PR, cancel this one.
@@ -101,6 +115,11 @@ install:
   # done from inside the powershell script as it would require to restart
   # the parent CMD process).
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - conda config --set always_yes yes --set changeps1 no
+  - conda update -q conda
+  - conda info -a
+  - "conda create -q -n test-environment python=%PYTHON_VERSION% numpy scipy nose"
+  - activate test-environment
 
   # Check that we have the expected version and architecture for Python
   - "python --version"
