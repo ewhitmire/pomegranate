@@ -1,5 +1,5 @@
-from distutils.core import setup
-from distutils.extension import Extension
+from setuptools import setup
+from setuptools import Extension
 import numpy as np
 
 try:
@@ -24,14 +24,14 @@ filenames = [ "base",
 
 if not use_cython:
     extensions = [
-        Extension( "pomegranate.{}".format( name ), 
-                   [ "pomegranate/{}.{}".format( name, ext ) ], 
+        Extension( "pomegranate.{}".format( name ),
+                   [ "pomegranate/{}.{}".format( name, ext ) ],
                    include_dirs=[np.get_include()] ) for name in filenames
     ]
 else:
     extensions = [
-            Extension( "pomegranate.*", 
-                       [ "pomegranate/*.pyx" ], 
+            Extension( "pomegranate.*",
+                       [ "pomegranate/*.pyx" ],
                        include_dirs=[np.get_include()] )
     ]
 
@@ -54,4 +54,5 @@ setup(
         "networkx >= 1.8.1",
         "scipy >= 0.17.0"
     ],
+    test_suite = 'nose.collector'
 )
