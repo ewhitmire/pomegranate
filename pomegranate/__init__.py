@@ -24,7 +24,7 @@ if os.name == 'nt':
     else:
         os.environ['PATH'] = 'C:\MinGW\bin'
 
-    mingw_setup_args = { 'options': 'include_dirs': np.get_include() }
+    mingw_setup_args = {'include_dirs': np.get_include() }
     pyximport.install(setup_args=mingw_setup_args)
 
 elif os.name == 'posix':
@@ -34,6 +34,7 @@ elif os.name == 'posix':
         os.environ['CFLAGS'] = ' -I' + np.get_include()
 
     pyximport.install()
+pyximport.install()
 
 from .hmm import *
 from .kmeans import *
