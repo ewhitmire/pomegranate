@@ -34,7 +34,6 @@ matrix:
     language: generic
     env: PYTHON=3.6
 before_install:
-  - sudo apt-get update
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then
       if [[ "$PYTHON" == "2.7" ]]; then
         wget http://repo.continuum.io/miniconda/Miniconda-latest-MacOSX-x86_64.sh -O miniconda.sh;
