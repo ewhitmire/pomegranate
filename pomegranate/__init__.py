@@ -20,9 +20,9 @@ if os.name == 'nt':
 
     # XXX: we're assuming that MinGW is installed in C:\MinGW (default)
     if 'PATH' in os.environ:
-        os.environ['PATH'] = os.environ['PATH'] + ';C:\MinGW\bin'
+        os.environ['PATH'] = os.environ['PATH'] + r';C:\MinGW\bin'
     else:
-        os.environ['PATH'] = 'C:\MinGW\bin'
+        os.environ['PATH'] = r'C:\MinGW\bin'
 
     mingw_setup_args = {'include_dirs': np.get_include() }
     pyximport.install(setup_args=mingw_setup_args)
@@ -34,7 +34,6 @@ elif os.name == 'posix':
         os.environ['CFLAGS'] = ' -I' + np.get_include()
 
     pyximport.install()
-pyximport.install()
 
 from .hmm import *
 from .kmeans import *
