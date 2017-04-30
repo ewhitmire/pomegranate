@@ -8,9 +8,6 @@ matrix:
     env: PYTHON=2.7
   - os: osx
     language: generic
-    env: PYTHON=3.3
-  - os: osx
-    language: generic
     env: PYTHON=3.4
   - os: osx
     language: generic
@@ -21,9 +18,6 @@ matrix:
   - os: linux
     language: generic
     env: PYTHON=2.7
-  - os: linux
-    language: generic
-    env: PYTHON=3.3
   - os: linux
     language: generic
     env: PYTHON=3.4
