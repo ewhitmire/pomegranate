@@ -19,7 +19,7 @@ environment:
     - PYTHON: "C:\\Python27-x64"
       PYTHON_VERSION: "2.7" # currently 2.7.9
       PYTHON_ARCH: "64"
-      MINICONDA: C:\Miniconda
+      MINICONDA: C:\Miniconda-x64
 
     - PYTHON: "C:\\Python34"
       PYTHON_VERSION: "3.4" # currently 3.4.3
@@ -29,7 +29,7 @@ environment:
     - PYTHON: "C:\\Python34-x64"
       PYTHON_VERSION: "3.4" # currently 3.4.3
       PYTHON_ARCH: "64"
-      MINICONDA: C:\Miniconda3
+      MINICONDA: C:\Miniconda3-x64
 
     # Python versions not pre-installed
 
@@ -41,7 +41,7 @@ environment:
     - PYTHON: "C:\\Python35-x64"
       PYTHON_VERSION: "3.5"
       PYTHON_ARCH: "64"
-      MINICONDA: C:\Miniconda3
+      MINICONDA: C:\Miniconda3-x64
 
     - PYTHON: "C:\\Python36"
       PYTHON_VERSION: "3.6"
@@ -51,7 +51,7 @@ environment:
     - PYTHON: "C:\\Python36-x64"
       PYTHON_VERSION: "3.6"
       PYTHON_ARCH: "64"
-      MINICONDA: C:\Miniconda3
+      MINICONDA: C:\Miniconda3-x64
 
 install:
   # If there is a newer build queued for the same PR, cancel this one.
