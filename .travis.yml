@@ -45,7 +45,7 @@ install:
 script:
 - python setup.py test
 after_success:
-- python setup.py bdist_wheel
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then python setup.py bdist_wheel fi
 deploy:
   provider: releases
   api_key:
